@@ -1,0 +1,452 @@
+<Window x:Class="ProjectArchive.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Project Archive"
+        MinHeight="760"
+        MinWidth="1180"
+        Height="820"
+        Width="1320"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="{DynamicResource BackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{DynamicResource SidebarBrush}" Padding="24">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="Project Archive" FontSize="25" FontWeight="SemiBold" />
+                    <TextBlock Text="Developer project database"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
+                               Margin="0,6,0,28" />
+
+                    <Button Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" FontWeight="SemiBold" Style="{StaticResource SidebarButton}" />
+                    <Button Content="Projects" Command="{Binding NavigateCommand}" CommandParameter="Projects" Style="{StaticResource SidebarButton}" />
+                    <Button Content="Technologies" Command="{Binding NavigateCommand}" CommandParameter="Technologies" Style="{StaticResource SidebarButton}" />
+                    <Button Content="Statistics" Command="{Binding NavigateCommand}" CommandParameter="Statistics" Style="{StaticResource SidebarButton}" />
+                    <Button Content="Favorites" Command="{Binding NavigateCommand}" CommandParameter="Favorites" Style="{StaticResource SidebarButton}" />
+                    <Button Content="Settings" Command="{Binding NavigateCommand}" CommandParameter="Settings" Style="{StaticResource SidebarButton}" />
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="26">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                    <TextBlock Text="{Binding PageTitle}" FontSize="32" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding PageSubtitle}"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
+                               FontSize="15"
+                               TextWrapping="Wrap"
+                               Margin="0,6,0,0" />
+                </StackPanel>
+
+                <Grid Grid.Row="1">
+                    <StackPanel Visibility="{Binding IsDashboardActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <UniformGrid Columns="6" Margin="0,0,0,20">
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Total" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.TotalProjects}" FontSize="28" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Completed" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.CompletedProjects}" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="In Progress" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.InProgressProjects}" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Archived" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.ArchivedProjects}" FontSize="28" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Favorites" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.FavoriteProjects}" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource WarningBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="Hours" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.TotalActualHours, StringFormat={}{0:0.#}}" FontSize="28" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.4*" />
+                                <ColumnDefinition Width="22" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                                <StackPanel>
+                                    <TextBlock Text="Recent Projects" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                    <DataGrid ItemsSource="{Binding RecentProjects}" MinHeight="260">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
+                                            <DataGridTextColumn Header="Updated" Binding="{Binding UpdatedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="120" />
+                                            <DataGridTextColumn Header="Tech" Binding="{Binding TechnologySummary}" Width="2*" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                                <StackPanel>
+                                    <TextBlock Text="Top Technologies" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                    <ItemsControl ItemsSource="{Binding TechnologyRows}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,0,0,10">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Name}" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding Count}" Foreground="{DynamicResource PrimaryBrush}" FontWeight="SemiBold" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <Grid Visibility="{Binding IsProjectsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="16" Margin="0,0,0,18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" />
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding SelectedStatusFilter}" Margin="0,0,10,0" />
+                                <ComboBox Grid.Column="2" ItemsSource="{Binding DifficultyOptions}" SelectedItem="{Binding SelectedDifficultyFilter}" Margin="0,0,10,0" />
+                                <ComboBox Grid.Column="3" ItemsSource="{Binding CategoryOptions}" SelectedItem="{Binding SelectedCategoryFilter}" Margin="0,0,10,0" />
+                                <ComboBox Grid.Column="4" ItemsSource="{Binding PriorityOptions}" SelectedItem="{Binding SelectedPriorityFilter}" Margin="0,0,10,0" />
+                                <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <CheckBox Content="Favorites" IsChecked="{Binding FavoritesOnly}" Margin="0,0,12,0" />
+                                    <CheckBox Content="Archived" IsChecked="{Binding IncludeArchived}" Margin="0,0,12,0" />
+                                    <Button Content="Clear" Command="{Binding ClearFiltersCommand}" Style="{StaticResource SecondaryButton}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="22" />
+                                <ColumnDefinition Width="1.1*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Projects" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                    <DataGrid Grid.Row="1" ItemsSource="{Binding Projects}" SelectedItem="{Binding SelectedProject}" MinHeight="360">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Fav" Binding="{Binding FavoriteGlyph}" Width="42" />
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="1.5*" />
+                                            <DataGridTextColumn Header="Technology" Binding="{Binding TechnologySummary}" Width="1.3*" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="105" />
+                                            <DataGridTextColumn Header="Updated" Binding="{Binding UpdatedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="110" />
+                                            <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}" Width="95" />
+                                            <DataGridTextColumn Header="Rating" Binding="{Binding Rating}" Width="70" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                                        <Button Content="New" Command="{Binding NewProjectCommand}" Margin="0,0,10,0" />
+                                        <Button Content="Save" Command="{Binding SaveProjectCommand}" Margin="0,0,10,0" />
+                                        <Button Content="Delete" Command="{Binding DeleteProjectCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" />
+                                        <Button Content="Export JSON" Command="{Binding ExportJsonCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" />
+                                        <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" Style="{StaticResource SecondaryButton}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="Project Detail" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,16" />
+                                        <TextBlock Text="Name" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <TextBlock Text="Description" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.Description, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="74" Margin="0,4,0,12" />
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="0,0,8,12">
+                                                <TextBlock Text="Status" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <ComboBox ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding Editor.Status}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Margin="8,0,0,12">
+                                                <TextBlock Text="Difficulty" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <ComboBox ItemsSource="{Binding DifficultyOptions}" SelectedItem="{Binding Editor.Difficulty}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Margin="0,0,8,12">
+                                                <TextBlock Text="Category" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <ComboBox ItemsSource="{Binding CategoryOptions}" SelectedItem="{Binding Editor.Category}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Margin="8,0,0,12">
+                                                <TextBlock Text="Priority" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <ComboBox ItemsSource="{Binding PriorityOptions}" SelectedItem="{Binding Editor.Priority}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </UniformGrid>
+                                        <UniformGrid Columns="2">
+                                            <CheckBox Content="Favorite" IsChecked="{Binding Editor.IsFavorite}" />
+                                            <CheckBox Content="Archived" IsChecked="{Binding Editor.IsArchived}" />
+                                        </UniformGrid>
+                                        <TextBlock Text="Technologies" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,12,0,0" />
+                                        <TextBox Text="{Binding Editor.TechnologyNames, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <TextBlock Text="Tags" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.TagNames, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <UniformGrid Columns="3">
+                                            <StackPanel Margin="0,0,8,12">
+                                                <TextBlock Text="Rating" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <TextBox Text="{Binding Editor.Rating, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Margin="8,0,8,12">
+                                                <TextBlock Text="Estimated" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <TextBox Text="{Binding Editor.EstimatedHours, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Margin="8,0,0,12">
+                                                <TextBlock Text="Actual" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                                <TextBox Text="{Binding Editor.ActualHours, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </UniformGrid>
+                                        <TextBlock Text="GitHub URL" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.GitHubUrl, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <TextBlock Text="Demo URL" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.DemoUrl, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <TextBlock Text="Folder Path" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.FolderPath, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,12" />
+                                        <TextBlock Text="Notes" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                        <TextBox Text="{Binding Editor.Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="100" Margin="0,4,0,12" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsTechnologiesActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="Technologies" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                <DataGrid ItemsSource="{Binding TechnologyRows}" MinHeight="420">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+                                        <DataGridTextColumn Header="Projects" Binding="{Binding Count}" Width="160" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <StackPanel Visibility="{Binding IsStatisticsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <UniformGrid Columns="3" Margin="0,0,0,20">
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18" Margin="0,0,14,0">
+                                <StackPanel>
+                                    <TextBlock Text="Completion" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.CompletedProjects}" FontSize="34" FontWeight="SemiBold" Foreground="{DynamicResource SuccessBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18" Margin="0,0,14,0">
+                                <StackPanel>
+                                    <TextBlock Text="Active Work" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.InProgressProjects}" FontSize="34" FontWeight="SemiBold" Foreground="{DynamicResource PrimaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                                <StackPanel>
+                                    <TextBlock Text="Tracked Hours" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                    <TextBlock Text="{Binding Statistics.TotalActualHours, StringFormat={}{0:0.#}}" FontSize="34" FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+                        <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="Technology Usage" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                <DataGrid ItemsSource="{Binding TechnologyRows}" MinHeight="320">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Technology" Binding="{Binding Name}" Width="*" />
+                                        <DataGridTextColumn Header="Project Count" Binding="{Binding Count}" Width="180" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <Grid Visibility="{Binding IsFavoritesActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="18">
+                            <StackPanel>
+                                <TextBlock Text="Favorite Projects" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,12" />
+                                <DataGrid ItemsSource="{Binding FavoriteProjects}" SelectedItem="{Binding SelectedProject}" MinHeight="420">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120" />
+                                        <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" Width="120" />
+                                        <DataGridTextColumn Header="Rating" Binding="{Binding Rating}" Width="80" />
+                                        <DataGridTextColumn Header="Tech" Binding="{Binding TechnologySummary}" Width="2*" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Grid Visibility="{Binding IsSettingsActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.05*" />
+                            <ColumnDefinition Width="22" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="22" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="22">
+                            <StackPanel>
+                                <TextBlock Text="Appearance" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Text="Switch the workspace between focused dark mode and brighter daylight mode."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,6,0,18" />
+
+                                <Grid Margin="0,0,0,18">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Dark theme" FontWeight="SemiBold" />
+                                        <TextBlock Text="Recommended for long coding sessions."
+                                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                                   FontSize="13" />
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1"
+                                              IsChecked="{Binding PendingIsDarkTheme}"
+                                              VerticalAlignment="Center" />
+                                </Grid>
+
+                                <TextBlock Text="Accent color" FontWeight="SemiBold" />
+                                <TextBlock Text="Used for highlights, selection states, and key metrics."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           FontSize="13"
+                                           Margin="0,2,0,8" />
+                                <ComboBox ItemsSource="{Binding AccentColorOptions}"
+                                          SelectedItem="{Binding PendingSelectedAccentColor}"
+                                          Width="180"
+                                          HorizontalAlignment="Left" />
+                                <Button Content="Save Settings"
+                                        Command="{Binding SaveSettingsCommand}"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,18,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="0" Grid.Column="2" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="22">
+                            <StackPanel>
+                                <TextBlock Text="Automation" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Text="Small workflow preferences for how the archive behaves."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,6,0,18" />
+
+                                <Grid Margin="0,0,0,16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Auto save" FontWeight="SemiBold" />
+                                        <TextBlock Text="Keep edited project fields ready for saving."
+                                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                                   FontSize="13" />
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1"
+                                              IsChecked="{Binding PendingAutoSaveEnabled}"
+                                              VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Daily backups" FontWeight="SemiBold" />
+                                        <TextBlock Text="Reserve a place for scheduled JSON backups."
+                                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                                   FontSize="13" />
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="1"
+                                              IsChecked="{Binding PendingDailyBackupsEnabled}"
+                                              VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="0" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="22">
+                            <StackPanel>
+                                <TextBlock Text="Storage" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Text="Project Archive stores data locally on this machine."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,6,0,18" />
+                                <TextBlock Text="Database Path" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBox Text="{Binding DatabasePath, Mode=OneWay}" IsReadOnly="True" Margin="0,4,0,14" />
+                                <TextBlock Text="Export Folder" Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBox Text="{Binding ExportDirectory, Mode=OneWay}" IsReadOnly="True" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="2" Grid.Column="2" Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="22">
+                            <StackPanel>
+                                <TextBlock Text="About" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Text="Project Archive" FontSize="17" FontWeight="SemiBold" Margin="0,12,0,4" />
+                                <TextBlock Text="A local portfolio database for tracking projects, technologies, notes, favorites, and exports."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="Built with WPF, C#, SQLite, and Entity Framework Core."
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,14,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>
+
